@@ -49,12 +49,12 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'balance' => 1,
+            'balance' => 0,
           ]);
     
         // $check = $this->create($data);
          
-        return redirect("dashboard")->withSuccess('You have signed-in');
+        return redirect("login")->withSuccess('You have signed-in');
     }
     public function logout() {
         Session::flush();

@@ -4,28 +4,20 @@ namespace App\Http\Controllers\Api\Payment;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\VARequest;
 use Xendit\Xendit;
 use Carbon\Carbon;
 use App\Models\Payment;
-use App\Models\User;
-class XenditController extends Controller
-{
-    //
-    private $token = "xnd_development_0JnRa3LAWdiSRbkafREmsKC76oNNPDMdshMhBuGQfBRm7bS331TqgUV6m7dVlDT";
-    public function getListVa()
-    {
-        Xendit::setApiKey($this->token);
-        $getVABanks = \Xendit\VirtualAccounts::getVABanks();
-    // var_dump($getVABanks);
-    return response()->json([
-        
-        'data' => $getVABanks
-    ])->setStatusCode(200);
+use Auth;
 
-    }
-    public function createVa(Request $request)
+class XenditRealCaseController extends Controller
+{
+    private $token = "xnd_development_0JnRa3LAWdiSRbkafREmsKC76oNNPDMdshMhBuGQfBRm7bS331TqgUV6m7dVlDT";
+    public function PembayaranVA(VARequest $request)
     {
-        
+        // dd($request);
+        // return $request;
+
         Xendit::setApiKey($this->token);
         $external_id = 'va-'.time();
         $params = [
@@ -37,53 +29,24 @@ class XenditController extends Controller
      'expiration_date' => Carbon::now()->addDays(1)->toISOString(),
      'is_single_use' => true
     ];
+    $createVA = \Xendit\VirtualAccounts::create($params);
+    // return $createVA['id'];
     $insert = Payment::insert([
             'external_id' => $external_id,
+            'payment_id' => $createVA['id'],
             'payment_channel' => 'Virtual Account',
             'email' => $request->email,
             'price' => $request->price,
             'status' => '0',
-            'user_id' => Auth::user()->id
+            'user_id' => 1
     ]);
-     //      $params = ["external_id" => \uniqid(),
-//      "bank_code" => $request->bank,
-//      "name" => $request->user_name,
-//      "expected_amount" => 50000,
-//      'is_closed' => true
-//   ];
-     $createVA = \Xendit\VirtualAccounts::create($params);
-     return response()->json([
-         'success' => true,
-        'data' => $createVA
-    ])->setStatusCode(200);
-    }
-    public function getFVA($id)
-    {
-        Xendit::setApiKey($this->token);
+    return response()->json(['msg'=> ' Checkout! Berhasil']);
 
-        $id = $id;
-        $getVA = \Xendit\VirtualAccounts::retrieve($id);
-        return response()->json([
-            'data' => $getVA
-        ]);
-      
+
     }
-    public function cekPembayaranVA($id)
+    public function CheckoutVA(Request $request)
     {
 
-        Xendit::setApiKey($this->token);
-
-        $paymentID = $id;
-
-        $getFVAPayment = \Xendit\VirtualAccounts::getFVAPayment($paymentID);
-        // var_dump($getFVAPayment);
-        return response()->json([
-            'data' => $getFVAPayment
-        ]);
-    }
-
-    public function callbackVa(Request $request)
-    {
         $external_id = $request->external_id;
         $status = $request->status;
         $payment = Payment::where('external_id',$external_id)->exists();
@@ -116,15 +79,6 @@ class XenditController extends Controller
                 'msg' => 'Data tidak ada!'
             ]);
         }
-    }
-   
-    
-    public function showBalance()
-    {
-        Xendit::setApiKey($this->token);
-        $getBalance = \Xendit\Balance::getBalance('CASH');
-        return response()->json([
-            'msg' => $getBalance
-        ]);
+
     }
 }

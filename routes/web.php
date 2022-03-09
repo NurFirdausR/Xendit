@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,9 +22,7 @@ Route::get('/register',[AuthController::class,'form_register'])->name('register.
 Route::post('/login/store',[AuthController::class,'login'])->name('login');
 Route::post('/registe/store',[AuthController::class,'register'])->name('register');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth'])->name('dashboard');
 
 Route::get('/signout',[AuthController::class,'logout'])->name('logout');
 
