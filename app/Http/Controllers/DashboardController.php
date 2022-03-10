@@ -19,10 +19,16 @@ class DashboardController extends Controller
         $getVABanks = \Xendit\VirtualAccounts::getVABanks();
      
         $VA_checkout =   Payment::where('user_id',Auth::user()->id)->where('status','0')->first();
-        $getVA = \Xendit\VirtualAccounts::retrieve($VA_checkout->payment_id);
-        // dd(,);
-$start =  Carbon::parse($getVA['expiration_date']);
-$end   =  Carbon::parse($getVA['expiration_date'])->subDays(1);
+        if ($VA_checkout !=  null) {
+            $getVA = \Xendit\VirtualAccounts::retrieve($VA_checkout->payment_id);
+            // dd(,);
+    $start =  Carbon::parse($getVA['expiration_date']);
+    $end   =  Carbon::parse($getVA['expiration_date'])->subDays(1);
+        }else{
+            $getVA = null;
+            $start = null;
+            $end = null;
+        }
 
         // $response = Http::withHeaders([
         //     'key' => 'xnd_development_0JnRa3LAWdiSRbkafREmsKC76oNNPDMdshMhBuGQfBRm7bS331TqgUV6m7dVlDT'
@@ -35,7 +41,7 @@ $end   =  Carbon::parse($getVA['expiration_date'])->subDays(1);
         // } else {
         //     print_r(json_decode($response));
         // }
-        // dd($getVABanks);
+        // dd($getVA);
         return view('dashboard',compact('getVABanks','VA_checkout','getVA','start','end'));
         # code...
     }

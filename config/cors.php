@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie','https://api.xendit.co/pool_virtual_accounts/simulate_payment'],
 
     'allowed_methods' => ['*'],
 

@@ -25,12 +25,12 @@
             @csrf
             <div class="mb-3">
                 <label for="exampleInputPassword1" class="form-label">Transfer Amount</label>
-                <input type="number" id="transfer_amount" name="transfer_amount" class="form-control" id="exampleInputPassword1">
+                <input type="number" id="transfer_amount" name="transfer_amount" class="form-control" >
             </div>
 
             <div class="mb-3">
                 <label for="exampleInputPassword1" class="form-label">Bank Account Number</label>
-                <input type="text" id="bank_account_number" name="bank_account_number" class="form-control" id="exampleInputPassword1">
+                <input type="text" id="bank_account_number" name="bank_account_number" class="form-control" >
             </div>
 
             <div class="mb-3">
@@ -41,6 +41,10 @@
                             {{ $item['name'] }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="mb-3" hidden>
+                <label for="exampleInputPassword1" class="form-label">Payment Id</label>
+                <input type="text" id="payment_checkout_id" name="payment_checkout_id" class="form-control" value="{{  $VA_checkout->payment_id ?? ''  }}">
             </div>
 
             <button type="submit" class="btn btn-success">bayar</button>
@@ -94,6 +98,9 @@
                             <span id="error_price" class="text-danger"></span>
                             
                         </div>
+                        <div class="mb-3" hidden>
+                            <input type="text" id="user_id" name="user_id" class="form-control" value="{{Auth::user()->id}}">
+                        </div>
 
 
                      
@@ -107,6 +114,8 @@
         </div>
     </div>
     <div class="p-5">
+    {{-- <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div> --}}
+
         <div class="row">
             {{-- {{dd($getVA)}} --}}
          {{-- @forelse ($VA_checkout as $item) --}}
@@ -123,7 +132,7 @@
                     </div>
 
             </div>
-            <div class="card-body row">
+            <div class="card-body row" >
              
                 <div class="col-6">
                     <h5 class="card-title">{{$getVA['bank_code'] != null ? $getVA['bank_code'] : ''   }} Virtual Account</h5>
@@ -163,6 +172,9 @@
 
                     @endif
                 </div>
+            </div>
+            <div class="card-body row" id="CheckoutPembayaran">
+             
             </div>
         </div>
         @endif

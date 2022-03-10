@@ -30,37 +30,37 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-             CountDownTimer('{{$end}}', 'countdown');
-				function CountDownTimer(dt, id)
-				{
-					var end = new Date('{{$start}}');
-					var _second = 1000;
-					var _minute = _second * 60;
-					var _hour = _minute * 60;
-					var _day = _hour * 24;
-					var timer;
-					function showRemaining() {
-						var now = new Date();
-						var distance = end - now;
-						if (distance < 0) {
+            //  CountDownTimer('{{$end}}', 'countdown');
+			// 	function CountDownTimer(dt, id)
+			// 	{
+			// 		var end = new Date('{{$start}}');
+			// 		var _second = 1000;
+			// 		var _minute = _second * 60;
+			// 		var _hour = _minute * 60;
+			// 		var _day = _hour * 24;
+			// 		var timer;
+			// 		function showRemaining() {
+			// 			var now = new Date();
+			// 			var distance = end - now;
+			// 			if (distance < 0) {
 
-							clearInterval(timer);
-							document.getElementById(id).innerHTML = '<b>Expired</b> ';
-							return;
-						}
-						var days = Math.floor(distance / _day);
-						var hours = Math.floor((distance % _day) / _hour);
-						var minutes = Math.floor((distance % _hour) / _minute);
-						var seconds = Math.floor((distance % _minute) / _second);
+			// 				clearInterval(timer);
+			// 				document.getElementById(id).innerHTML = '<b>Expired</b> ';
+			// 				return;
+			// 			}
+			// 			var days = Math.floor(distance / _day);
+			// 			var hours = Math.floor((distance % _day) / _hour);
+			// 			var minutes = Math.floor((distance % _hour) / _minute);
+			// 			var seconds = Math.floor((distance % _minute) / _second);
 
-						document.getElementById(id).innerHTML = days + 'days ';
-						document.getElementById(id).innerHTML += hours + 'hrs ';
-						document.getElementById(id).innerHTML += minutes + 'mins ';
-						document.getElementById(id).innerHTML += seconds + 'secs';
-						// document.getElementById(id).innerHTML +='<h2> Belum Expired</h2>';
-					}
-					timer = setInterval(showRemaining, 1000);
-				}
+			// 			document.getElementById(id).innerHTML = days + 'days ';
+			// 			document.getElementById(id).innerHTML += hours + 'hrs ';
+			// 			document.getElementById(id).innerHTML += minutes + 'mins ';
+			// 			document.getElementById(id).innerHTML += seconds + 'secs';
+			// 			// document.getElementById(id).innerHTML +='<h2> Belum Expired</h2>';
+			// 		}
+			// 		timer = setInterval(showRemaining, 1000);
+			// 	}
 function copyToClipboard(element) {
   var $temp = $("<input>");
   $("body").append($temp);
@@ -77,19 +77,22 @@ function copyToClipboard(element) {
                 axios.post("{{route('api.pembayaranVA')}}", {
                     bank: $('#bank').val(),
                     email: $('#email').val(),
-                    price: $('#price').val()
+                    price: $('#price').val(),
+                    user_id: $('#user_id').val()
                 })
                 .then(function (response) {
                     $('#exampleModal').modal('hide');
                          $('#bank').val('')
                    $('#email').val('')
                      $('#price').val('')
-                    console.log(response);
+                    console.log(response.data.data);
+                    $('#CheckoutPembayaran').append(response.data.data);
                     Swal.fire({
                     icon: 'success',
                     title: 'Berhasil',
                     text: response.msg,
                     })
+
                 })
                 .catch(function (error) {
                     console.log(error.response.data.errors);
@@ -100,34 +103,73 @@ function copyToClipboard(element) {
                         
                 });
             });
+
+
             $('body').on('submit','#formCheckout', function (e) {
                 e.preventDefault();
-                console.log('ok')
 
-                axios.post("url('https://api.xendit.co/pool_virtual_accounts/simulate_payment')", {
+             
+                axios.post("{{route('api.checkoutVA')}}", {
                     transfer_amount: $('#transfer_amount').val(),
                     bank_account_number: $('#bank_account_number').val(),
-                    BANK_pembayaran: $('#BANK_pembayaran').val()
+                    BANK_pembayaran: $('#BANK_pembayaran').val(),
+                    payment_id: $('#payment_checkout_id').val()
                 })
                 .then(function (response) {
-                         $('#transfer_amount').val('')
-                   $('#bank_account_number').val('')
-                     $('#BANK_pembayaran').val('')
-                    console.log(response);
-                    Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: response.msg,
-                    })
+                 
+                    // Swal.fire({
+                    //             icon: 'success',
+                    //             title: 'Berhasil melakukan pembayaran!',
+                    //             text: response.msg,
+                    //             })
+                    const token = 'eG5kX2RldmVsb3BtZW50XzBKblJhM0xBV2RpU1Jia2FmUkVtc0tDNzZvTk5QRE1kc2hNaEJ1R1FmQlJtN2JTMzMxVHFnVVY2bTdkVmxEVA=='
+
+                    // console.log()
+                    // const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64')
+                    console.log(response.data.data['transfer_amount'])
+                    axios({
+                        method: 'post',
+                        url: 'https://api.xendit.co/pool_virtual_accounts/simulate_payment',
+                        data: {
+                                transfer_amount: response.data.data['transfer_amount'],
+                                bank_account_number: response.data.data['bank_account_number'],
+                                bank_code: response.data.data['bank_code']
+                        },
+                        header: {
+                            "Content-Type": "application/json",
+                            Authorization: "Basic "+token,
+                            Accept: "application/json",
+                            "Cache-Control": "no-cache",
+                            Host: "api.xendit.co"
+
+                        }
+                    }).then(function (response) {
+                                    $('#transfer_amount').val('')
+                                $('#bank_account_number').val('')
+                                $('#BANK_pembayaran').val('')
+                                console.log(response);
+                                Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil melakukan pembayaran!',
+                                text: response.msg,
+                                })
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                              
+                                    
+                            });
                 })
                 .catch(function (error) {
-                    console.log(error.response.data.errors);
-                    $.each(error.response.data.errors, function (indexInArray, valueOfElement) { 
-                        $('#error_'+indexInArray).text(valueOfElement) 
+                    console.log(error);
+                    // $.each(error.response.data.errors, function (indexInArray, valueOfElement) { 
+                    //     $('#error_'+indexInArray).text(valueOfElement) 
                          
-                    });
+                    // });
                         
                 });
+
+            
             });
          });
           
