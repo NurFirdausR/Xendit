@@ -21,7 +21,7 @@
 
     </div>
     <div class="card p-5">
-        <form method="POST" id="formCheckout">
+        <form  id="formCheckout">
             @csrf
             <div class="mb-3">
                 <label for="exampleInputPassword1" class="form-label">Transfer Amount</label>
@@ -132,7 +132,7 @@
                     </div>
 
             </div>
-            <div class="card-body row" >
+            <div class="card-body row" id="CheckoutPembayaran" >
              
                 <div class="col-6">
                     <h5 class="card-title">{{$getVA['bank_code'] != null ? $getVA['bank_code'] : ''   }} Virtual Account</h5>
@@ -173,9 +173,7 @@
                     @endif
                 </div>
             </div>
-            <div class="card-body row" id="CheckoutPembayaran">
-             
-            </div>
+       
         </div>
         @endif
       {{-- @empty 

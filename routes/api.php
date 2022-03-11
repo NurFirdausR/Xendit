@@ -29,3 +29,6 @@ Route::get('xendit/balance/show',[XenditController::class,'showBalance']);
 
 Route::post('xendit/VA/realcase',[XenditRealCaseController::class,'PembayaranVA'])->name('api.pembayaranVA');
 Route::post('xendit/VA/realcase/callback',[XenditRealCaseController::class,'CheckoutVA'])->name('api.checkoutVA');
+
+
+Route::post('xendit/VA/contoh_callback',[XenditRealCaseController::class,'contoh_callback'])->name('api.contoh_callback');

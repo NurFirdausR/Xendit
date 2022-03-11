@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
@@ -68,10 +68,12 @@ function copyToClipboard(element) {
   document.execCommand("copy");
   $temp.remove();
 }
+
          $(document).ready(function () {
+// console.log($('#bank_account_number').val   ('<div>tai</div>'))             
              
-            $('body').on('submit','#formPemabayaranVA', function (e) {
-                e.preventDefault();
+             $('body').on('submit','#formPemabayaranVA', function (e) {
+                 e.preventDefault();
                 console.log('ok')
 
                 axios.post("{{route('api.pembayaranVA')}}", {
@@ -81,16 +83,17 @@ function copyToClipboard(element) {
                     user_id: $('#user_id').val()
                 })
                 .then(function (response) {
-                    $('#exampleModal').modal('hide');
+                    $('#CheckoutPembayaran').append(response.data.data)
+
+                    $('#exampleModal').modal('hide')
                          $('#bank').val('')
                    $('#email').val('')
                      $('#price').val('')
-                    console.log(response.data.data);
-                    $('#CheckoutPembayaran').append(response.data.data);
+                    console.log(response.data.data)
                     Swal.fire({
                     icon: 'success',
                     title: 'Berhasil',
-                    text: response.msg,
+                    text: response.data.data,
                     })
 
                 })
@@ -117,33 +120,31 @@ function copyToClipboard(element) {
                 })
                 .then(function (response) {
                  
-                    // Swal.fire({
-                    //             icon: 'success',
-                    //             title: 'Berhasil melakukan pembayaran!',
-                    //             text: response.msg,
-                    //             })
-                    const token = 'eG5kX2RldmVsb3BtZW50XzBKblJhM0xBV2RpU1Jia2FmUkVtc0tDNzZvTk5QRE1kc2hNaEJ1R1FmQlJtN2JTMzMxVHFnVVY2bTdkVmxEVA=='
+               
+                    const token = 'xnd_development_0JnRa3LAWdiSRbkafREmsKC76oNNPDMdshMhBuGQfBRm7bS331TqgUV6m7dVlDT'
 
-                    // console.log()
+                    // console.log('Authorization: "Basic" '+token  );
                     // const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64')
-                    console.log(response.data.data['transfer_amount'])
-                    axios({
-                        method: 'post',
-                        url: 'https://api.xendit.co/pool_virtual_accounts/simulate_payment',
-                        data: {
+                    var username = token;
+                    var password = '';
+                    var basicAuth = 'Basic ' + btoa(username + ':' + password).toString('base64');
+                    console.log(basicAuth);
+                    
+                    axios.post('https://api.xendit.co/pool_virtual_accounts/simulate_payment/',{
+                            header: {
+                            Authorization: basicAuth,
+
+
+                        }
+                    },
+                    {
+                      
                                 transfer_amount: response.data.data['transfer_amount'],
                                 bank_account_number: response.data.data['bank_account_number'],
                                 bank_code: response.data.data['bank_code']
-                        },
-                        header: {
-                            "Content-Type": "application/json",
-                            Authorization: "Basic "+token,
-                            Accept: "application/json",
-                            "Cache-Control": "no-cache",
-                            Host: "api.xendit.co"
-
-                        }
-                    }).then(function (response) {
+                       
+                    }
+                    ).then(function (response) {
                                     $('#transfer_amount').val('')
                                 $('#bank_account_number').val('')
                                 $('#BANK_pembayaran').val('')

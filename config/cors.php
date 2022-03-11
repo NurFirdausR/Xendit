@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie','https://api.xendit.co/pool_virtual_accounts/simulate_payment'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie','https://api.xendit.co/*','http://localhost:8000/*'],
 
     'allowed_methods' => ['*'],
 
@@ -29,6 +29,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
